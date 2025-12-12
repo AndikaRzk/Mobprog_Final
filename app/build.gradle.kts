@@ -38,6 +38,22 @@ dependencies {
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
+    
+    // Network & API libraries
+    implementation(libs.volley)
+    implementation(libs.okhttp)
+    implementation(libs.okhttp.logging)
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.gson)
+    implementation(libs.gson)
+    
+    // Image loading
+    implementation(libs.picasso)
+    
+    // UI components
+    implementation(libs.swiperefreshlayout)
+    implementation(libs.recyclerview)
+    
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

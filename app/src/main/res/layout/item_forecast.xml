@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="8dp"
+    app:cardBackgroundColor="@color/card_background_transparent"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="16dp">
+
+        <!-- Day & Date -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textDay"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_primary"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                tools:text="Senin" />
+
+            <TextView
+                android:id="@+id/textDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp"
+                tools:text="12 Des" />
+
+        </LinearLayout>
+
+        <!-- Weather Icon -->
+        <ImageView
+            android:id="@+id/imageWeatherIcon"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginHorizontal="12dp"
+            android:contentDescription="Weather icon"
+            tools:src="@android:drawable/ic_menu_gallery" />
+
+        <!-- Temperature -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="end"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textTempHigh"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_primary"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                tools:text="32°" />
+
+            <TextView
+                android:id="@+id/textTempLow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_secondary"
+                android:textSize="14sp"
+                tools:text="25°" />
+
+        </LinearLayout>
+
+        <!-- Weather Description -->
+        <TextView
+            android:id="@+id/textDescription"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:ellipsize="end"
+            android:maxLines="2"
+            android:textColor="@color/text_secondary"
+            android:textSize="12sp"
+            tools:text="Partly Cloudy" />
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

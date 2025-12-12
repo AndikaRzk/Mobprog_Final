@@ -1,5 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Base colors -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    
+    <!-- Primary colors - Sky Blue theme -->
+    <color name="primary">#2196F3</color>
+    <color name="primary_dark">#1976D2</color>
+    <color name="primary_light">#BBDEFB</color>
+    <color name="accent">#FF9800</color>
+    
+    <!-- Weather background colors -->
+    <color name="sunny_start">#FFD54F</color>
+    <color name="sunny_end">#FF9800</color>
+    
+    <color name="cloudy_start">#90A4AE</color>
+    <color name="cloudy_end">#607D8B</color>
+    
+    <color name="rainy_start">#5C6BC0</color>
+    <color name="rainy_end">#3949AB</color>
+    
+    <color name="night_start">#1A237E</color>
+    <color name="night_end">#0D1B2A</color>
+    
+    <color name="stormy_start">#37474F</color>
+    <color name="stormy_end">#263238</color>
+    
+    <!-- Card and text colors -->
+    <color name="card_background">#FFFFFF</color>
+    <color name="card_background_transparent">#B3FFFFFF</color>
+    <color name="text_primary">#212121</color>
+    <color name="text_secondary">#757575</color>
+    <color name="text_on_primary">#FFFFFF</color>
+    
+    <!-- Dark mode colors -->
+    <color name="card_background_dark">#1E1E1E</color>
+    <color name="card_background_dark_transparent">#B31E1E1E</color>
+    <color name="text_primary_dark">#FFFFFF</color>
+    <color name="text_secondary_dark">#B3FFFFFF</color>
 </resources>
