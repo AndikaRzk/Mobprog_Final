@@ -17,6 +17,8 @@ picasso = "2.8"
 # UI components
 swiperefreshlayout = "1.1.0"
 recyclerview = "1.3.2"
+# Location
+playServicesLocation = "21.1.0"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -38,6 +40,8 @@ picasso = { group = "com.squareup.picasso", name = "picasso", version.ref = "pic
 # UI components
 swiperefreshlayout = { group = "androidx.swiperefreshlayout", name = "swiperefreshlayout", version.ref = "swiperefreshlayout" }
 recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerview" }
+# Location
+play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

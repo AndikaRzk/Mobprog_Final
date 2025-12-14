@@ -1,5 +1,14 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
+}
+
+// Load local.properties
+val localProperties = Properties()
+val localPropertiesFile = rootProject.file("local.properties")
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.inputStream().use { localProperties.load(it) }
 }
 
 android {
@@ -16,6 +25,13 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        
+        // Read API key from local.properties
+        buildConfigField("String", "WEATHER_API_KEY", "\"${localProperties.getProperty("WEATHER_API_KEY", "")}\"")
+    }
+    
+    buildFeatures {
+        buildConfig = true
     }
 
     buildTypes {
@@ -53,6 +69,9 @@ dependencies {
     // UI components
     implementation(libs.swiperefreshlayout)
     implementation(libs.recyclerview)
+    
+    // Location
+    implementation(libs.play.services.location)
     
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)

@@ -1,5 +1,9 @@
 package com.example.project_mobrog;
 
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -15,14 +19,22 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.tasks.OnSuccessListener;
 
 import com.example.project_mobrog.adapter.ForecastAdapter;
 import com.example.project_mobrog.api.ApiClient;
@@ -31,6 +43,8 @@ import com.example.project_mobrog.api.VolleyHelper;
 import com.example.project_mobrog.api.WeatherApiService;
 import com.example.project_mobrog.model.ForecastResponse;
 import com.example.project_mobrog.model.WeatherResponse;
+import com.example.project_mobrog.model.FavoriteCity;
+import com.example.project_mobrog.utils.DatabaseHelper;
 import com.example.project_mobrog.utils.PreferenceManager;
 import com.example.project_mobrog.utils.WeatherUtils;
 import com.google.android.material.card.MaterialCardView;
@@ -64,6 +78,8 @@ public class MainActivity extends AppCompatActivity {
     private ConstraintLayout mainContainer;
     private EditText editTextCity;
     private ImageButton buttonSearch;
+    private ImageButton buttonFavorites;
+    private ImageButton buttonFavorite;
     private MaterialCardView currentWeatherCard;
     private TextView textCityName;
     private ImageView imageWeatherIcon;
@@ -81,9 +97,17 @@ public class MainActivity extends AppCompatActivity {
     private ForecastAdapter forecastAdapter;
     private PreferenceManager preferenceManager;
     private WeatherApiService apiService;
+    private DatabaseHelper databaseHelper;
 
     // Current data
     private String currentCity = "";
+    private String currentCountry = "";
+    
+    // Location
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1001;
+    private static final int REQUEST_CODE_FAVORITES = 1002;
+    private FusedLocationProviderClient fusedLocationClient;
+    private boolean isShowingLocationWeather = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,17 +124,19 @@ public class MainActivity extends AppCompatActivity {
         initViews();
         setupRecyclerView();
         setupListeners();
+        setupBackPressHandler();
         
         // Initialize helpers
         preferenceManager = new PreferenceManager(this);
         apiService = ApiClient.getApiService();
+        databaseHelper = new DatabaseHelper(this);
         
-        // Load last searched city if available
-        String lastCity = preferenceManager.getLastCity();
-        if (lastCity != null && !lastCity.isEmpty()) {
-            editTextCity.setText(lastCity);
-            searchWeather(lastCity);
-        }
+        // Initialize location client
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        
+        // Try to get device location and show weather
+        // If location fails, empty state will remain visible
+        requestLocationAndFetchWeather();
     }
 
     private void initViews() {
@@ -130,6 +156,8 @@ public class MainActivity extends AppCompatActivity {
         recyclerViewForecast = findViewById(R.id.recyclerViewForecast);
         progressBar = findViewById(R.id.progressBar);
         emptyState = findViewById(R.id.emptyState);
+        buttonFavorites = findViewById(R.id.buttonFavorites);
+        buttonFavorite = findViewById(R.id.buttonFavorite);
     }
 
     private void setupRecyclerView() {
@@ -171,6 +199,13 @@ public class MainActivity extends AppCompatActivity {
                 swipeRefreshLayout.setRefreshing(false);
             }
         });
+
+        buttonFavorites.setOnClickListener(v -> {
+            Intent intent = new Intent(this, FavoriteCityActivity.class);
+            startActivityForResult(intent, REQUEST_CODE_FAVORITES);
+        });
+
+        buttonFavorite.setOnClickListener(v -> toggleFavorite());
     }
 
     /**
@@ -184,6 +219,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         currentCity = city;
+        isShowingLocationWeather = false; // Mark as manual search
         showLoading(true);
 
         // Using Retrofit for main API calls
@@ -290,6 +326,14 @@ public class MainActivity extends AppCompatActivity {
      * Display current weather data
      */
     private void displayCurrentWeather(WeatherResponse weather) {
+        // Update current data holders
+        currentCity = weather.getName();
+        if (weather.getSys() != null && weather.getSys().getCountry() != null) {
+            currentCountry = weather.getSys().getCountry();
+        } else {
+            currentCountry = "";
+        }
+
         emptyState.setVisibility(View.GONE);
         currentWeatherCard.setVisibility(View.VISIBLE);
 
@@ -334,6 +378,8 @@ public class MainActivity extends AppCompatActivity {
             }
             int bgDrawable = WeatherUtils.getBackgroundForWeather(w.getMain(), isNight);
             mainContainer.setBackgroundResource(bgDrawable);
+
+            updateFavoriteIcon();
         }
     }
 
@@ -388,5 +434,167 @@ public class MainActivity extends AppCompatActivity {
         ConnectivityManager cm = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         return activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+    }
+
+    /**
+     * Setup back button handler using OnBackPressedCallback
+     */
+    private void setupBackPressHandler() {
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                // If weather data is displayed, go back to empty state
+                if (currentWeatherCard.getVisibility() == View.VISIBLE) {
+                    // Clear current search and show empty state
+                    currentCity = "";
+                    isShowingLocationWeather = false;
+                    editTextCity.setText("");
+                    hideWeatherData();
+                    
+                    // Reset background to default
+                    mainContainer.setBackgroundResource(R.drawable.bg_default);
+                } else {
+                    // If already on empty state, exit the app
+                    setEnabled(false);
+                    getOnBackPressedDispatcher().onBackPressed();
+                }
+            }
+        });
+    }
+    
+    /**
+     * Request location permission and fetch weather
+     */
+    private void requestLocationAndFetchWeather() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) 
+                == PackageManager.PERMISSION_GRANTED) {
+            // Permission already granted, get location
+            getLocationAndFetchWeather();
+        } else {
+            // Request permission
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    LOCATION_PERMISSION_REQUEST_CODE);
+        }
+    }
+    
+    /**
+     * Get current location and fetch weather
+     */
+    private void getLocationAndFetchWeather() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) 
+                != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        
+        // Don't show global loading here to keep Empty State visible
+        // while fetching location in background
+        // showLoading(true);
+        
+        fusedLocationClient.getLastLocation()
+                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        if (location != null) {
+                            fetchWeatherByLocation(location.getLatitude(), location.getLongitude());
+                        } else {
+                            showLoading(false);
+                            showError("Tidak dapat mendapatkan lokasi. Silakan cari kota manual.");
+                        }
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    showLoading(false);
+                    showError("Gagal mendapatkan lokasi: " + e.getMessage());
+                });
+    }
+    
+    /**
+     * Fetch weather data by coordinates
+     */
+    private void fetchWeatherByLocation(double lat, double lon) {
+        isShowingLocationWeather = true;
+        
+        // Fetch current weather by coordinates
+        apiService.getCurrentWeatherByCoordinates(lat, lon, ApiClient.API_KEY, "metric")
+                .enqueue(new Callback<WeatherResponse>() {
+                    @Override
+                    public void onResponse(Call<WeatherResponse> call, Response<WeatherResponse> response) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            displayCurrentWeather(response.body());
+                            currentCity = response.body().getName();
+                        } else {
+                            showError("Gagal mengambil data cuaca lokasi");
+                        }
+                        showLoading(false);
+                    }
+
+                    @Override
+                    public void onFailure(Call<WeatherResponse> call, Throwable t) {
+                        showError("Error: " + t.getMessage());
+                        showLoading(false);
+                    }
+                });
+        
+        // Fetch forecast by coordinates
+        apiService.getForecastByCoordinates(lat, lon, ApiClient.API_KEY, "metric")
+                .enqueue(new Callback<ForecastResponse>() {
+                    @Override
+                    public void onResponse(Call<ForecastResponse> call, Response<ForecastResponse> response) {
+                        if (response.isSuccessful() && response.body() != null) {
+                            displayForecast(response.body());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<ForecastResponse> call, Throwable t) {
+                        // Silently fail for forecast
+                    }
+                });
+    }
+    
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission granted, get location
+                getLocationAndFetchWeather();
+            } else {
+                // Permission denied, show message
+                showError("Izin lokasi ditolak. Silakan cari kota manual.");
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, android.content.Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_CODE_FAVORITES && resultCode == RESULT_OK && data != null) {
+            String city = data.getStringExtra(FavoriteCityActivity.EXTRA_CITY_NAME);
+            if (city != null && !city.isEmpty()) {
+                searchWeather(city);
+            }
+        }
+    }
+
+    private void updateFavoriteIcon() {
+        if (databaseHelper.isFavorite(currentCity)) {
+            buttonFavorite.setImageResource(R.drawable.ic_heart_filled);
+        } else {
+            buttonFavorite.setImageResource(R.drawable.ic_heart_outline);
+        }
+    }
+
+    private void toggleFavorite() {
+        if (databaseHelper.isFavorite(currentCity)) {
+            databaseHelper.removeFavorite(currentCity);
+            Toast.makeText(this, "Dihapus dari favorit", Toast.LENGTH_SHORT).show();
+        } else {
+            // Need country code to save proper model
+            databaseHelper.addFavorite(new FavoriteCity(currentCity, currentCountry));
+             Toast.makeText(this, "Ditambahkan ke favorit", Toast.LENGTH_SHORT).show();
+        }
+        updateFavoriteIcon();
     }
 }

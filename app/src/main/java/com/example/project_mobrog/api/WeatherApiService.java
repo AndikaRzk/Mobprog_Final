@@ -39,4 +39,36 @@ public interface WeatherApiService {
             @Query("appid") String apiKey,
             @Query("units") String units
     );
+    
+    /**
+     * Get current weather data by coordinates
+     * @param lat Latitude
+     * @param lon Longitude
+     * @param apiKey OpenWeatherMap API key
+     * @param units Temperature units
+     * @return Current weather data
+     */
+    @GET("weather")
+    Call<WeatherResponse> getCurrentWeatherByCoordinates(
+            @Query("lat") double lat,
+            @Query("lon") double lon,
+            @Query("appid") String apiKey,
+            @Query("units") String units
+    );
+    
+    /**
+     * Get 5-day forecast by coordinates
+     * @param lat Latitude
+     * @param lon Longitude
+     * @param apiKey OpenWeatherMap API key
+     * @param units Temperature units
+     * @return 5-day forecast data
+     */
+    @GET("forecast")
+    Call<ForecastResponse> getForecastByCoordinates(
+            @Query("lat") double lat,
+            @Query("lon") double lon,
+            @Query("appid") String apiKey,
+            @Query("units") String units
+    );
 }

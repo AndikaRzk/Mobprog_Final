@@ -1,5 +1,7 @@
 package com.example.project_mobrog.api;
 
+import com.example.project_mobrog.BuildConfig;
+
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
@@ -15,8 +17,9 @@ public class ApiClient {
     
     private static final String BASE_URL = "https://api.openweathermap.org/data/2.5/";
     
-    // TODO: Replace with your actual API key from https://openweathermap.org/api
-    public static final String API_KEY = "YOUR_API_KEY_HERE";
+    // API Key is loaded from BuildConfig (defined in local.properties)
+    // public static final String API_KEY = BuildConfig.WEATHER_API_KEY;
+    public static final String API_KEY = "1461716e467289f3450a76a868f3b26b";
     
     private static Retrofit retrofit = null;
     private static WeatherApiService apiService = null;

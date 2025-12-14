@@ -11,8 +11,8 @@
     <color name="accent">#FF9800</color>
     
     <!-- Weather background colors -->
-    <color name="sunny_start">#FFD54F</color>
-    <color name="sunny_end">#FF9800</color>
+    <color name="sunny_start">#667eea</color>
+    <color name="sunny_end">#764ba2</color>
     
     <color name="cloudy_start">#90A4AE</color>
     <color name="cloudy_end">#607D8B</color>
@@ -38,4 +38,7 @@
     <color name="card_background_dark_transparent">#B31E1E1E</color>
     <color name="text_primary_dark">#FFFFFF</color>
     <color name="text_secondary_dark">#B3FFFFFF</color>
+    
+    <!-- Status colors -->
+    <color name="error">#F44336</color>
 </resources>
