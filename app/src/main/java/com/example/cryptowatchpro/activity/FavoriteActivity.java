@@ -71,7 +71,7 @@ public class FavoriteActivity extends AppCompatActivity {
             adapter = new CoinAdapter(favoriteList, "USD", coin -> {
                 Intent intent = new Intent(FavoriteActivity.this, DetailActivity.class);
                 intent.putExtra("coin_id", coin.getId());
-                intent.putExtra("currency", "USD"); // Defaulting 
+                intent.putExtra("currency", coin.getCurrency() != null ? coin.getCurrency() : "usd"); 
                 startActivity(intent);
             });
             recyclerView.setAdapter(adapter);

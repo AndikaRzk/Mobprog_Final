@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class DatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "cryptowatch.db";
-    private static final int DATABASE_VERSION = 2; // Incremented
+    private static final int DATABASE_VERSION = 3; // Incremented for multi-currency support
 
     public static final String TABLE_FAVORITES = "favorite_coins";
     public static final String COL_ID = "coin_id";
@@ -30,7 +30,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         String createTable = "CREATE TABLE " + TABLE_FAVORITES + " (" +
-                COL_ID + " TEXT PRIMARY KEY, " +
+                COL_ID + " TEXT, " +
                 COL_NAME + " TEXT, " +
                 COL_SYMBOL + " TEXT, " +
                 COL_PRICE + " REAL, " +
@@ -40,7 +40,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 COL_VOLUME + " REAL, " +
                 COL_HIGH_24H + " REAL, " +
                 COL_LOW_24H + " REAL, " +
-                COL_CHANGE_24H + " REAL)";
+                COL_CHANGE_24H + " REAL, " +
+                "PRIMARY KEY (" + COL_ID + ", currency))";
         db.execSQL(createTable);
     }
 

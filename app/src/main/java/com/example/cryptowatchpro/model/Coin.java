@@ -4,6 +4,11 @@ import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 
 public class Coin implements Serializable {
+    private String currency;
+
+    public String getCurrency() { return currency; }
+    public void setCurrency(String currency) { this.currency = currency; }
+
     @SerializedName("id")
     private String id;
 

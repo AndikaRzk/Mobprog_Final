@@ -24,7 +24,7 @@ public class FavoriteDao {
         values.put(DatabaseHelper.COL_NAME, coin.getName());
         values.put(DatabaseHelper.COL_SYMBOL, coin.getSymbol());
         values.put(DatabaseHelper.COL_PRICE, coin.getCurrentPrice());
-        values.put("currency", "USD"); // Context dependent, keeping simple
+values.put("currency", coin.getCurrency() != null ? coin.getCurrency() : "usd");
         values.put(DatabaseHelper.COL_IMAGE, coin.getImage());
         
         // Save detailed stats
@@ -39,16 +39,20 @@ public class FavoriteDao {
         return result != -1;
     }
 
-    public boolean removeFromFavorite(String coinId) {
+    public boolean removeFromFavorite(String coinId, String currency) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        int rows = db.delete(DatabaseHelper.TABLE_FAVORITES, DatabaseHelper.COL_ID + "=?", new String[]{coinId});
+        int rows = db.delete(DatabaseHelper.TABLE_FAVORITES, 
+                DatabaseHelper.COL_ID + "=? AND currency=?", 
+                new String[]{coinId, currency});
         db.close();
         return rows > 0;
     }
 
-    public boolean isFavorite(String coinId) {
+    public boolean isFavorite(String coinId, String currency) {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor cursor = db.query(DatabaseHelper.TABLE_FAVORITES, null, DatabaseHelper.COL_ID + "=?", new String[]{coinId}, null, null, null);
+        Cursor cursor = db.query(DatabaseHelper.TABLE_FAVORITES, null, 
+                DatabaseHelper.COL_ID + "=? AND currency=?", 
+                new String[]{coinId, currency}, null, null, null);
         boolean exists = (cursor.getCount() > 0);
         cursor.close();
         db.close();
@@ -68,6 +72,9 @@ public class FavoriteDao {
                 coin.setSymbol(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COL_SYMBOL)));
                 coin.setCurrentPrice(cursor.getDouble(cursor.getColumnIndexOrThrow(DatabaseHelper.COL_PRICE)));
                 coin.setImage(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COL_IMAGE)));
+                if (cursor.getColumnIndex("currency") != -1) {
+                    coin.setCurrency(cursor.getString(cursor.getColumnIndexOrThrow("currency")));
+                }
                 list.add(coin);
             } while (cursor.moveToNext());
         }
@@ -75,9 +82,11 @@ public class FavoriteDao {
         db.close();
         return list;
     }
-    public Coin getFavoriteCoin(String coinId) {
+    public Coin getFavoriteCoin(String coinId, String currency) {
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor cursor = db.query(DatabaseHelper.TABLE_FAVORITES, null, DatabaseHelper.COL_ID + "=?", new String[]{coinId}, null, null, null);
+        Cursor cursor = db.query(DatabaseHelper.TABLE_FAVORITES, null, 
+                DatabaseHelper.COL_ID + "=? AND currency=?", 
+                new String[]{coinId, currency}, null, null, null);
         
         Coin coin = null;
         if (cursor.moveToFirst()) {
@@ -87,6 +96,9 @@ public class FavoriteDao {
             coin.setSymbol(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COL_SYMBOL)));
             coin.setCurrentPrice(cursor.getDouble(cursor.getColumnIndexOrThrow(DatabaseHelper.COL_PRICE)));
             coin.setImage(cursor.getString(cursor.getColumnIndexOrThrow(DatabaseHelper.COL_IMAGE)));
+            if (cursor.getColumnIndex("currency") != -1) {
+                coin.setCurrency(cursor.getString(cursor.getColumnIndexOrThrow("currency")));
+            }
             
             // Retrieve details
             coin.setMarketCap(cursor.getDouble(cursor.getColumnIndexOrThrow(DatabaseHelper.COL_MARKET_CAP)));

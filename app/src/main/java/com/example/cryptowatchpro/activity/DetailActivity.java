@@ -85,7 +85,7 @@ public class DetailActivity extends AppCompatActivity {
 
     private void checkFavoriteStatus() {
         if (coinId != null) {
-            isFavorite = favoriteDao.isFavorite(coinId);
+            isFavorite = favoriteDao.isFavorite(coinId, currency);
             updateFavoriteIcon();
         }
     }
@@ -102,10 +102,11 @@ public class DetailActivity extends AppCompatActivity {
         if (currentCoin == null) return;
         
         if (isFavorite) {
-            favoriteDao.removeFromFavorite(coinId);
+            favoriteDao.removeFromFavorite(coinId, currency);
             isFavorite = false;
             Toast.makeText(this, "Removed from Favorites", Toast.LENGTH_SHORT).show();
         } else {
+            currentCoin.setCurrency(currency);
             favoriteDao.addToFavorite(currentCoin);
             isFavorite = true;
             Toast.makeText(this, "Added to Favorites", Toast.LENGTH_SHORT).show();
@@ -142,9 +143,13 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void tryOfflineLoad(String reason) {
-        Coin offlineCoin = favoriteDao.getFavoriteCoin(coinId);
+        Coin offlineCoin = favoriteDao.getFavoriteCoin(coinId, currency);
         if (offlineCoin != null) {
             currentCoin = offlineCoin;
+            // If cached coin has a stored currency, prefer it for display consistency
+            if (currentCoin.getCurrency() != null) {
+                this.currency = currentCoin.getCurrency();
+            }
             displayData(currentCoin);
             Toast.makeText(DetailActivity.this, reason, Toast.LENGTH_LONG).show();
         } else {
@@ -153,9 +158,11 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void displayData(Coin coin) {
+        String displayCurrency = coin.getCurrency() != null ? coin.getCurrency() : currency;
+
         tvName.setText(coin.getName());
         tvSymbol.setText(coin.getSymbol());
-        tvPrice.setText(CurrencyUtil.formatCurrency(coin.getCurrentPrice(), currency));
+        tvPrice.setText(CurrencyUtil.formatCurrency(coin.getCurrentPrice(), displayCurrency));
         
         double change = coin.getPriceChangePercentage24h();
         tvChange.setText(String.format("%.2f%%", change));
@@ -166,10 +173,10 @@ public class DetailActivity extends AppCompatActivity {
             tvChange.setTextColor(Color.GREEN);
         }
         
-        tvMarketCap.setText(getString(R.string.market_cap) + ": " + CurrencyUtil.formatCurrency(coin.getMarketCap(), currency));
-        tvVolume.setText(getString(R.string.volume) + ": " + CurrencyUtil.formatCurrency(coin.getTotalVolume(), currency));
-        tvHigh24h.setText(CurrencyUtil.formatCurrency(coin.getHigh24h(), currency));
-        tvLow24h.setText(CurrencyUtil.formatCurrency(coin.getLow24h(), currency));
+        tvMarketCap.setText(getString(R.string.market_cap) + ": " + CurrencyUtil.formatCurrency(coin.getMarketCap(), displayCurrency));
+        tvVolume.setText(getString(R.string.volume) + ": " + CurrencyUtil.formatCurrency(coin.getTotalVolume(), displayCurrency));
+        tvHigh24h.setText(CurrencyUtil.formatCurrency(coin.getHigh24h(), displayCurrency));
+        tvLow24h.setText(CurrencyUtil.formatCurrency(coin.getLow24h(), displayCurrency));
 
         if (coin.getImage() != null && !coin.getImage().isEmpty()) {
             Picasso.get().load(coin.getImage()).into(imgLogo);

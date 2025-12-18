@@ -96,7 +96,8 @@ public class CoinAdapter extends RecyclerView.Adapter<CoinAdapter.CoinViewHolder
         public void bind(final Coin coin, String currencyCode, final OnItemClickListener listener) {
             tvName.setText(coin.getName());
             tvSymbol.setText(coin.getSymbol());
-            tvPrice.setText(CurrencyUtil.formatCurrency(coin.getCurrentPrice(), currencyCode));
+            String displayCurrency = coin.getCurrency() != null ? coin.getCurrency() : currencyCode;
+            tvPrice.setText(CurrencyUtil.formatCurrency(coin.getCurrentPrice(), displayCurrency));
 
             double change = coin.getPriceChangePercentage24h();
             tvChange.setText(String.format("%.2f%%", change));
