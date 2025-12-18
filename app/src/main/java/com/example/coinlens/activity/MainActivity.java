@@ -1,4 +1,4 @@
-package com.example.cryptowatchpro.activity;
+package com.example.coinlens.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -22,9 +22,9 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.example.cryptowatchpro.R;
-import com.example.cryptowatchpro.adapter.CoinAdapter;
-import com.example.cryptowatchpro.model.Coin;
+import com.example.coinlens.R;
+import com.example.coinlens.adapter.CoinAdapter;
+import com.example.coinlens.model.Coin;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 

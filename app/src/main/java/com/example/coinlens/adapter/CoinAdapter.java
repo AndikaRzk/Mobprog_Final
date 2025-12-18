@@ -1,4 +1,4 @@
-package com.example.cryptowatchpro.adapter;
+package com.example.coinlens.adapter;
 
 import android.graphics.Color;
 import android.view.LayoutInflater;
@@ -10,9 +10,9 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.cryptowatchpro.R;
-import com.example.cryptowatchpro.model.Coin;
-import com.example.cryptowatchpro.util.CurrencyUtil;
+import com.example.coinlens.R;
+import com.example.coinlens.model.Coin;
+import com.example.coinlens.util.CurrencyUtil;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;

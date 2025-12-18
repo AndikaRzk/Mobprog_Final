@@ -3,13 +3,13 @@ plugins {
 }
 
 android {
-    namespace = "com.example.cryptowatchpro"
+    namespace = "com.example.coinlens"
     compileSdk {
         version = release(36)
     }
 
     defaultConfig {
-        applicationId = "com.example.cryptowatchpro"
+        applicationId = "com.example.coinlens"
         minSdk = 24
         targetSdk = 36
         versionCode = 1

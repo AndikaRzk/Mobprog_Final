@@ -1,4 +1,4 @@
-package com.example.cryptowatchpro.util;
+package com.example.coinlens.util;
 
 import java.text.NumberFormat;
 import java.util.Locale;

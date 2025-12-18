@@ -1,4 +1,4 @@
-package com.example.cryptowatchpro.database;
+package com.example.coinlens.database;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
 
-    private static final String DATABASE_NAME = "cryptowatch.db";
+    private static final String DATABASE_NAME = "coinlens.db";
     private static final int DATABASE_VERSION = 3; // Incremented for multi-currency support
 
     public static final String TABLE_FAVORITES = "favorite_coins";

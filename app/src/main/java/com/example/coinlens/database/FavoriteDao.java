@@ -1,11 +1,11 @@
-package com.example.cryptowatchpro.database;
+package com.example.coinlens.database;
 
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-import com.example.cryptowatchpro.model.Coin;
+import com.example.coinlens.model.Coin;
 
 import java.util.ArrayList;
 import java.util.List;

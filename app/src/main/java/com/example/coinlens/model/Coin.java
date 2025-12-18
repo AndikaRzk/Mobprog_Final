@@ -1,4 +1,4 @@
-package com.example.cryptowatchpro.model;
+package com.example.coinlens.model;
 
 import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;

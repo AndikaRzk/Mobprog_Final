@@ -1,4 +1,4 @@
-package com.example.cryptowatchpro.activity;
+package com.example.coinlens.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,10 +9,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.cryptowatchpro.R;
-import com.example.cryptowatchpro.adapter.CoinAdapter;
-import com.example.cryptowatchpro.database.FavoriteDao;
-import com.example.cryptowatchpro.model.Coin;
+import com.example.coinlens.R;
+import com.example.coinlens.adapter.CoinAdapter;
+import com.example.coinlens.database.FavoriteDao;
+import com.example.coinlens.model.Coin;
 
 import java.util.List;
 

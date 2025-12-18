@@ -1,4 +1,4 @@
-package com.example.cryptowatchpro.activity;
+package com.example.coinlens.activity;
 
 import android.graphics.Color;
 import android.os.Bundle;
@@ -9,12 +9,12 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.cryptowatchpro.R;
-import com.example.cryptowatchpro.database.FavoriteDao;
-import com.example.cryptowatchpro.model.Coin;
-import com.example.cryptowatchpro.model.MarketChartResponse;
-import com.example.cryptowatchpro.network.ApiClient;
-import com.example.cryptowatchpro.util.CurrencyUtil;
+import com.example.coinlens.R;
+import com.example.coinlens.database.FavoriteDao;
+import com.example.coinlens.model.Coin;
+import com.example.coinlens.model.MarketChartResponse;
+import com.example.coinlens.network.ApiClient;
+import com.example.coinlens.util.CurrencyUtil;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.Entry;
@@ -115,7 +115,7 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     private void loadCoinDetails() {
-        android.util.Log.d("CryptoWatch", "Loading details for: " + coinId + ", currency: " + currency);
+        android.util.Log.d("CoinLens", "Loading details for: " + coinId + ", currency: " + currency);
         ApiClient.getService().getCoinDetailViaMarkets(currency, coinId).enqueue(new Callback<List<Coin>>() {
             @Override
             public void onResponse(Call<List<Coin>> call, Response<List<Coin>> response) {
@@ -127,7 +127,7 @@ public class DetailActivity extends AppCompatActivity {
                     if (response.code() == 429) {
                         tryOfflineLoad("Rate Limit. Showing offline data.");
                     } else {
-                        android.util.Log.e("CryptoWatch", errorMsg);
+                        android.util.Log.e("CoinLens", errorMsg);
                         Toast.makeText(DetailActivity.this, errorMsg, Toast.LENGTH_LONG).show();
                     }
                 }
@@ -136,7 +136,7 @@ public class DetailActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call<List<Coin>> call, Throwable t) {
                 String msg = t.getMessage() != null ? t.getMessage() : "Unknown Network Error";
-                android.util.Log.e("CryptoWatch", "Failure: " + msg);
+                android.util.Log.e("CoinLens", "Failure: " + msg);
                 tryOfflineLoad("Network Error. Showing offline data.");
             }
         });

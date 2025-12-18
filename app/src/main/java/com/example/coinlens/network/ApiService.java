@@ -1,7 +1,7 @@
-package com.example.cryptowatchpro.network;
+package com.example.coinlens.network;
 
-import com.example.cryptowatchpro.model.Coin;
-import com.example.cryptowatchpro.model.MarketChartResponse;
+import com.example.coinlens.model.Coin;
+import com.example.coinlens.model.MarketChartResponse;
 
 import retrofit2.Call;
 import retrofit2.http.GET;

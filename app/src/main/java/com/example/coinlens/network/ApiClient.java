@@ -1,4 +1,4 @@
-package com.example.cryptowatchpro.network;
+package com.example.coinlens.network;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
